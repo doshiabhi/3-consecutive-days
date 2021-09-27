@@ -1,0 +1,18 @@
+select *
+from (
+select *,
+case when temperature < 0 
+          and lead(temperature) over (order by day) < 0 
+          and lead(temperature,2) over (order by day) < 0
+          then 'Y'
+      when temperature < 0 
+          and lead(temperature) over (order by day) < 0 
+          and lag(temperature) over (order by day) < 0
+          then 'Y'
+       when temperature < 0 
+          and lag(temperature) over (order by day) < 0 
+          and lag(temperature,2) over (order by day) < 0
+          then 'Y'
+       end as flag
+from weather) as x
+where x.flag = 'Y'
